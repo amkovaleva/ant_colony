@@ -1,4 +1,4 @@
-export type Settings = {
+type Settings = {
     maxAntAge: number;
     maxAntSpeed: number;
 
@@ -8,3 +8,11 @@ export type Settings = {
     initialFoodCount: number;
     newFoodDueTime: number;
 }
+
+type TransformSettings = {
+    rotateAngle: number;
+    isReflectHorizontal: boolean;
+    isReflectVertical: boolean;
+}
+
+export {Settings, TransformSettings};

@@ -54,13 +54,13 @@ export default class App {
         this._home.size = new Point(50, 50);
 
         let needGenerate = this._settings.initialFoodCount + this._settings.initialAntCount,
-            width = this.width, height = this.height;
+            width = this.width - Math.max(Food.foodSize, Displayed.defaultImageSize) - 20, height = this.height - Math.max(Food.foodSize, Displayed.defaultImageSize) - 20;
         /**
          * сначала еду - потом муравьев
          */
         while (needGenerate > 0) {
             let isFoodGeneration = needGenerate > this._settings.initialAntCount,
-                point = Point.randomPoint(width - Food.foodSize, height - Food.foodSize),
+                point = Point.randomPoint(width, height),
                 resource = Point.randomNumber(isFoodGeneration ? Food.maxAmount : Ant.maxAge);
 
             if (isFoodGeneration) {
@@ -70,7 +70,7 @@ export default class App {
             }
 
             this._ants.push(new Ant(resource, point, Point.randomNumber(Movable.maxSpeed),
-                Point.randomPoint(width - Displayed.defaultImageSize, height - Displayed.defaultImageSize)));
+                Point.randomPoint(width, height)));
             needGenerate--;
         }
 
@@ -81,13 +81,16 @@ export default class App {
 
     }
 
-    draw(): void {
+    async draw(): Promise<any> {
         this.move();
         let ctx = this._canvasContext;
 
-        this._home.draw(ctx);
+        await this._home.draw(ctx);
         this._foods.forEach(f => f.draw(ctx));
-        this._ants.forEach(f => f.draw(ctx));
+        for(let ant of this._ants){
+            await ant.draw(ctx);
+
+        }
 
 
         //window.requestAnimationFrame(this.draw);

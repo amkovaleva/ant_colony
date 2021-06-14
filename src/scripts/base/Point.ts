@@ -8,14 +8,17 @@ export default class Point {
         this.y = y;
     }
 
-    static randomNumber(max:number):number{
-        return Math.ceil(Math.random() * max);
+    static randomNumber(max:number, min:number = 0):number{
+        let rand = min + Math.random() * (max + 1 - min);
+        return Math.floor(rand);
     }
 
     static randomPoint(maxX:number, maxY:number):Point{
+        let spaceLeft = 50;
+
         return new Point(
-            Point.randomNumber(maxX),
-            Point.randomNumber(maxY)
+            Point.randomNumber(maxX, spaceLeft),
+            Point.randomNumber(maxY, spaceLeft)
         )
     }
     /**
@@ -57,5 +60,25 @@ export default class Point {
             this.x +  Math.round(diff.x / ratio),
             this.y +  Math.round(diff.y / ratio)
         )
+    }
+
+    isLowerThen(point: Point):boolean{
+        return point.y < this.y;
+    }
+
+    isRighterThen(point: Point):boolean{
+        return point.x > this.x;
+    }
+
+    /**
+     * Возвращает угол в радианах между тремя точками. this - точка в углу.
+     * @param from Точка от которой "начинается" угол
+     * @param to Точка, которой "заканчиваеися" угол
+     */
+    angleFromTo(from: Point, to: Point):number{
+        let distFrom = this.distTo(from), dostTo = this.distTo(to),
+            vectorFrom = this.diffFrom(from), vectorTo = this.diffFrom(to);
+
+        return Math.acos((vectorFrom.x * vectorTo.x + vectorFrom.y * vectorTo.y) / (distFrom * dostTo) );
     }
 }

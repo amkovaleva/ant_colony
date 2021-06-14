@@ -6,6 +6,5 @@ export default class Ant extends Movable{
 
     constructor(age:number, position: Point, speed: number , destination: Point) {
         super(position, 'ant', speed, destination, age, Ant.maxAge);
-        this.extension = '.png'
     }
 }
