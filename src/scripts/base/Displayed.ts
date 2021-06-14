@@ -3,7 +3,7 @@ import {TransformSettings} from "./Settings";
 
 export default class Displayed {
     static defaultImageSize = 30;
-    static imagesToLoad: string[] = ['ant', 'signal', 'home', 'cherries', 'grapes', 'peach', 'apple', 'pineapple', 'watermelon'];
+    static imagesToLoad: string[] = ['ant','ant-home','ant-dead', 'signal', 'home', 'cherries', 'grapes', 'peach', 'apple', 'pineapple', 'watermelon'];
     static loadedImages: object[] = [];
     static loadedImagesCount: number = 0;
 

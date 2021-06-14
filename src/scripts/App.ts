@@ -78,6 +78,10 @@ export default class App {
         App.draw();
     }
 
+    static newFood(f:Food): void {
+        App.foods.push(f);
+    }
+
     static move(): void {
         let newTime = new Date().getTime(),
             timeDiff = newTime - App.time;
@@ -90,7 +94,7 @@ export default class App {
 
     static clear():void{
         App.foods = App.foods.filter(f => f.exists);
-        App.ants = App.ants.filter(f => f.exists);
+        App.ants = App.ants.filter(f => f.exists );
     }
 
     static draw():void {

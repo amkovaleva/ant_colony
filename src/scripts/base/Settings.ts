@@ -15,8 +15,8 @@ type TransformSettings = {
     rotateAngle: number;
     isReflectHorizontal: boolean;
 }
-type AntStatus = 'search' | 'take' | 'home';
+type AntStatus = 'search' | 'take' | 'home'| 'dead';
 
-const AntStatuses = {search: 'search', take: 'take', home: 'home' };
+const AntStatuses = {search: 'search', take: 'take', home: 'home' , dead: 'dead' };
 
 export {Settings, TransformSettings, AntStatus, AntStatuses};

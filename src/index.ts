@@ -10,11 +10,11 @@ document.body.append(canvas);
 let imagesLoad =  Displayed.loadImages();
 imagesLoad.then( res => {
     let app = new App({
-        maxAntAge: 60 * 10000, // минута
+        maxAntAge: 7 * 10000, // минута
         maxAntSpeed: 1,
         antVisibleDist: 150,
         maxAntWeight: 3,
-        initialAntCount: 1,
+        initialAntCount: 15,
         newAntsDueTime: 0.5,
 
         initialFoodCount: 5,
