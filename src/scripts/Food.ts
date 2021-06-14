@@ -12,7 +12,7 @@ export default class Food extends Mortal{
         return Math.max(...Food.foodTypes.map(t => t.amount));
     }
 
-    static foodSize = 30;
+    static foodSize = 40;
 
     constructor(position: Point, amount: number) {
         super(position, '', 0, amount);

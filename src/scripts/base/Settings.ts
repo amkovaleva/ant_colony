@@ -1,6 +1,8 @@
 type Settings = {
     maxAntAge: number;
     maxAntSpeed: number;
+    antVisibleDist: number;
+    maxAntWeight: number;
 
     initialAntCount: number;
     newAntsDueTime: number;
@@ -14,5 +16,8 @@ type TransformSettings = {
     isReflectHorizontal: boolean;
     isReflectVertical: boolean;
 }
+type AntStatus = 'search' | 'take' | 'home';
 
-export {Settings, TransformSettings};
+const AntStatuses = {search: 'search', take: 'take', home: 'home' };
+
+export {Settings, TransformSettings, AntStatus, AntStatuses};

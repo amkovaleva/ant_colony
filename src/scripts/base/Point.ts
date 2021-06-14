@@ -8,6 +8,11 @@ export default class Point {
         this.y = y;
     }
 
+
+    static get zero():Point{
+        return new Point(0, 0);
+    }
+
     static randomNumber(max:number, min:number = 0):number{
         let rand = min + Math.random() * (max + 1 - min);
         return Math.floor(rand);
@@ -15,7 +20,6 @@ export default class Point {
 
     static randomPoint(maxX:number, maxY:number):Point{
         let spaceLeft = 50;
-
         return new Point(
             Point.randomNumber(maxX, spaceLeft),
             Point.randomNumber(maxY, spaceLeft)
@@ -29,6 +33,9 @@ export default class Point {
         return new Point(point.x - this.x, point.y - this.y);
     }
 
+    isNearWith(point: Point, eps:Point): boolean{
+        return Math.abs(point.x - this.x) <= eps.x && Math.abs(point.y - this.y) <= eps.y;
+    }
     /**
      * рассотяние от данной точки до конечной
      * @param point - конечная точка
@@ -41,7 +48,7 @@ export default class Point {
     /**
      * Находит координаты точки, в которую нужно сдвинуться.
      * @param point - конечная точка, к которой по прямой приближаемся
-     * @param path - величина, ко которую нужно ствинуться
+     * @param path - величина, но которую нужно ствинуться
      * @param isPathByLine - индикатор того, в какую сторону откладывается path.
      * По умолчанию (true) -  величина сдвига задается по прямой до конечной точки.
      * Если false, то path - это величина сдвига по горизонтали
@@ -51,14 +58,14 @@ export default class Point {
         let diff = this.diffFrom(point),
             dist = this.distTo(point);
 
-        if(dist === 0)
-            return new Point(this.x, this.y);
+        if(dist < 1)
+            return point;
 
         let ratio = (isPathByLine ? dist : diff.x) / path;
 
         return new Point(
-            this.x +  Math.round(diff.x / ratio),
-            this.y +  Math.round(diff.y / ratio)
+            this.x + diff.x / ratio,
+            this.y +  diff.y / ratio
         )
     }
 
