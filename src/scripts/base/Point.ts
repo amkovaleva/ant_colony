@@ -13,11 +13,21 @@ export default class Point {
         return new Point(0, 0);
     }
 
+    /**
+     * Стучайное значение в промежутке от min до max
+     * @param max - максимальное возможное значение
+     * @param min - минимальное возможное значение. По умолчанию = 0
+     */
     static randomNumber(max:number, min:number = 0):number{
         let rand = min + Math.random() * (max + 1 - min);
         return Math.floor(rand);
     }
 
+    /**
+     * Возвращает стучайную точку с координатами от 50 до maxX | maxY
+     * @param maxX - Максимальное значение координаты X
+     * @param maxY - Максимальное значение координаты Y
+     */
     static randomPoint(maxX:number, maxY:number):Point{
         let spaceLeft = 50;
         return new Point(
@@ -33,6 +43,11 @@ export default class Point {
         return new Point(point.x - this.x, point.y - this.y);
     }
 
+    /**
+     * Определяет, находится ли точка в eps окрестности данной
+     * @param point точка
+     * @param eps окрестность
+     */
     isNearWith(point: Point, eps:Point): boolean{
         return Math.abs(point.x - this.x) <= eps.x && Math.abs(point.y - this.y) <= eps.y;
     }
@@ -69,10 +84,10 @@ export default class Point {
         )
     }
 
-    isLowerThen(point: Point):boolean{
-        return point.y < this.y;
-    }
-
+    /**
+     * возвращает true, если текущая точка правее point.
+     * @param point - точка, с которой мы сравниваем
+     */
     isRighterThen(point: Point):boolean{
         return point.x > this.x;
     }

@@ -11,18 +11,22 @@ export default class Ant extends Mortal{
     static maxWeight = 3;
     static antVisibleDist = Food.foodSize * 3;
     _destination: Point;
-    _initialSpeed: number;
     _state: AntStatus = 'search';
     _foodAmount: number = 0;
 
-    constructor(age:number, position: Point, speed: number , destination: Point) {
+    constructor(age:number, position: Point, destination: Point) {
         super(position, 'ant', age, Ant.maxAge);
-        this._initialSpeed = speed;
         this.destination = destination;
     }
 
+    /**
+     * Если нужно, меняем направление движения.
+     * Сдвигаемся в новую точку по пути.
+     * Если мы достигли цели, то обрабатываем это.
+     * @param time - время движения
+     */
     move(time:number): void{
-        this.resources += time/1000;
+        this.resources += time;
         if(this._state === AntStatuses.search)
             this.tryNewDirection();
 
@@ -32,6 +36,9 @@ export default class Ant extends Mortal{
             this.destinationReached()
     }
 
+    /**
+     * "Смотрим по сторонам" и если видим еду меняем конечную точку пути.
+     */
     tryNewDirection():void{
         let spaces = App.foods.map(f => f.position.distTo(this.position)), minDist = Math.min(...spaces);
         if(minDist > Ant.antVisibleDist)
@@ -41,6 +48,11 @@ export default class Ant extends Mortal{
         this._state = <AntStatus>AntStatuses.take;
     }
 
+    /**
+     * При достижении конечной точки:
+     * - либо берем случайным образом новую целевую точку,
+     * - либо забираем еду и идем домой
+     */
     destinationReached():void{
         if(this._state !== AntStatuses.take){
             if(this._state === AntStatuses.home)
@@ -65,6 +77,9 @@ export default class Ant extends Mortal{
         this._state =  <AntStatus>AntStatuses.home;
     }
 
+    /**
+     * настройки для поворота муравья: угол и нужно ли отразить по горизонтали
+     */
     get transformSettings():TransformSettings{
         let isRight = this._destination.isRighterThen(this.position),
             topPoint = new Point(this.position.x, this.position.y - 50), // так как на картинке муравей идет вверх
@@ -72,8 +87,7 @@ export default class Ant extends Mortal{
 
         return {
             rotateAngle: angle,
-            isReflectHorizontal: isRight,
-            isReflectVertical: false
+            isReflectHorizontal: isRight
         }
     }
 
@@ -91,11 +105,19 @@ export default class Ant extends Mortal{
         return Math.abs(point.y);
     }
 
+    /**
+     * Меняем значение конечкой точки.
+     * Обновляем информацию об отображении картинки муравья.
+     * @param destination - новая конечная точка пути
+     */
     set destination(destination: Point){
         this._destination = destination;
         this.rotateInfo = this.transformSettings;
     }
 
+    /**
+     * Добавляем еду в муравейник и убираем со "спины" муравья
+     */
     dropFood():void{
         Home.foodAmount += this._foodAmount;
         this._foodAmount = 0;

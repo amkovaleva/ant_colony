@@ -33,8 +33,7 @@ export default class Displayed {
     _position: Point;
     _transformSettings: TransformSettings = {
         rotateAngle: 0,
-        isReflectHorizontal: false,
-        isReflectVertical: false
+        isReflectHorizontal: false
     };
 
     _image: string;
@@ -86,11 +85,7 @@ export default class Displayed {
         if (this._transformSettings.rotateAngle)
             return false;
 
-        if (this._transformSettings.isReflectHorizontal)
-            return false;
-
-        return !this._transformSettings.isReflectVertical;
-
+        return !this._transformSettings.isReflectHorizontal;
     }
 
     drawImage(ctx: CanvasRenderingContext2D, img: any): void {
@@ -98,7 +93,7 @@ export default class Displayed {
             ctx.drawImage(img, this.position.x, this.position.y, this._size.x, this._size.y);
             return;
         }
-        let scale = new Point(this._transformSettings.isReflectHorizontal ? -1 : 1, this._transformSettings.isReflectVertical ? -1 : 1),
+        let scale = new Point(this._transformSettings.isReflectHorizontal ? -1 : 1, 1),
             x = this.position.x + this._size.x, y = this.position.y + this._size.y;
         ctx.save();
         ctx.translate(x, y);

@@ -10,7 +10,7 @@ document.body.append(canvas);
 let imagesLoad =  Displayed.loadImages();
 imagesLoad.then( res => {
     let app = new App({
-        maxAntAge: 60*1000,
+        maxAntAge: 60 * 10000, // минута
         maxAntSpeed: 1,
         antVisibleDist: 150,
         maxAntWeight: 3,

@@ -14,7 +14,6 @@ type Settings = {
 type TransformSettings = {
     rotateAngle: number;
     isReflectHorizontal: boolean;
-    isReflectVertical: boolean;
 }
 type AntStatus = 'search' | 'take' | 'home';
 

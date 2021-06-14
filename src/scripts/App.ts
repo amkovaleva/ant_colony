@@ -70,8 +70,7 @@ export default class App {
                 continue;
             }
 
-            this.ants.push(new Ant(resource, point, Point.randomNumber(Ant.maxSpeed),
-                Point.randomPoint(availablePos.x, availablePos.y)));
+            this.ants.push(new Ant(resource, point, Point.randomPoint(availablePos.x, availablePos.y)));
             needGenerate--;
         }
 
@@ -89,7 +88,13 @@ export default class App {
         App.time = newTime;
     }
 
+    static clear():void{
+        App.foods = App.foods.filter(f => f.exists);
+        App.ants = App.ants.filter(f => f.exists);
+    }
+
     static draw():void {
+        App.clear();
         App.move();
         let ctx = App.canvasContext;
 
