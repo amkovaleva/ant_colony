@@ -1,5 +1,5 @@
 import Point from "./base/Point";
-import {AntStatus, AntStatuses, TransformSettings} from "./base/Settings";
+import {AntStatus, AntStatuses, getTime, TransformSettings} from "./base/Settings";
 import Mortal from "./base/Mortal";
 import App from "./App";
 import Food from "./Food";
@@ -7,7 +7,7 @@ import Home from "./Home";
 
 export default class Ant extends Mortal {
     static maxAge = 50;
-    static maxSpeed = 1;
+    static maxSpeed = 0.1;
     static maxWeight = 3;
     static antVisibleDist = Food.foodSize * 3;
     _destination: Point;
@@ -49,7 +49,7 @@ export default class Ant extends Mortal {
         if (this.isDeadState || this.diffResources > liveTime)
             return;
 
-        this.resources -= 5000;// время, которое показывается могилка
+        this.resources -= getTime(0, 5);// время, которое показывается могилка
         this.state = AntStatuses.dead;
     }
 
@@ -147,7 +147,7 @@ export default class Ant extends Mortal {
      * this.diffResources - сколько осталось жить
      */
     get speed(): number {
-        let fifth = this.maxResources / 5, maxSpeed = Ant.maxSpeed / 10;
+        let fifth = this.maxResources / 5, maxSpeed = Ant.maxSpeed;
         if (this.resources <= 4 * fifth)
             return maxSpeed;
 

@@ -2,7 +2,7 @@ import Displayed from "./base/Displayed";
 import Point from "./base/Point";
 import Food from "./Food";
 import Ant from "./Ant";
-import {Settings} from "./base/Settings";
+import {AppTimer, AppTimerType, AppTimerTypes, Settings} from "./base/Settings";
 import Home from "./Home";
 
 export default class App {
@@ -13,7 +13,10 @@ export default class App {
     static home: Home;
     static foods: Food[] = [];
     static ants: Ant[] = [];
-    static time: number;
+    static timers: AppTimer[] = [];
+    static timer(name: string): AppTimer {
+        return App.timers.find(t => t.type === <AppTimerType>name)
+    }
 
     constructor(settings: Settings) {
         App.settings = settings;
@@ -74,7 +77,10 @@ export default class App {
             needGenerate--;
         }
 
-        App.time = new Date().getTime();
+        Object.values(AppTimerTypes).forEach(type =>{
+            App.timers.push({type: <AppTimerType>type, value: new Date().getTime()});
+        });
+
         App.draw();
     }
 
@@ -83,13 +89,13 @@ export default class App {
     }
 
     static move(): void {
-        let newTime = new Date().getTime(),
-            timeDiff = newTime - App.time;
+        let newTime = new Date().getTime(), timer = App.timer(AppTimerTypes.move),
+            timeDiff = newTime - timer.value;
 
         for(let ant of App.ants){
             ant.move(timeDiff);
         }
-        App.time = newTime;
+        timer.value = newTime;
     }
 
     static clear():void{
@@ -97,8 +103,30 @@ export default class App {
         App.ants = App.ants.filter(f => f.exists );
     }
 
+    static add():void{
+        App.timers.forEach(t=> {
+            if(t.type === <AppTimerType>AppTimerTypes.move)
+                return;
+
+            let isAnt = t.type === <AppTimerType>AppTimerTypes.ant, nowTime = new Date().getTime(), timePast = nowTime - t.value,
+                needPast = isAnt ? App.settings.newAntsDueTime :  App.settings.newFoodDueTime,
+                availablePos = App.randPosDiapasons(), count = Math.ceil(timePast / needPast);
+
+            while(count > 0){
+                if(isAnt){
+                    App.ants.push(new Ant(0, App.home.position, Point.randomPoint(availablePos.x, availablePos.y)) );
+                }else{
+                    App.foods.push(new Food(Point.randomPoint(availablePos.x, availablePos.y), Point.randomNumber(Food.maxAmount, 1)));
+                }
+                count--;
+                t.value += needPast;
+            }
+        });
+    }
+
     static draw():void {
         App.clear();
+        App.add();
         App.move();
         let ctx = App.canvasContext;
 
