@@ -89,17 +89,18 @@ export default class Displayed {
     }
 
     drawImage(ctx: CanvasRenderingContext2D, img: any): void {
+        let newX = this.position.x - this._size.x/2, newY = this.position.y - this._size.y/2;
+
         if (this.isDefTransSet) {
-            ctx.drawImage(img, this.position.x, this.position.y, this._size.x, this._size.y);
+            ctx.drawImage(img, newX, newY, this._size.x, this._size.y);
             return;
         }
-        let scale = new Point(this._transformSettings.isReflectHorizontal ? -1 : 1, 1),
-            x = this.position.x + this._size.x, y = this.position.y + this._size.y;
+        let scale = new Point(this._transformSettings.isReflectHorizontal ? -1 : 1, 1);
         ctx.save();
-        ctx.translate(x, y);
+        ctx.translate(newX, newY);
         ctx.scale(scale.x, scale.y);
         ctx.rotate(this._transformSettings.rotateAngle);
-        ctx.drawImage(img, -this._size.x, -this._size.y, this._size.x, this._size.y);
+        ctx.drawImage(img, 0, 0, this._size.x, this._size.y);
         ctx.restore();
     }
 
@@ -110,7 +111,7 @@ export default class Displayed {
         ctx.fillStyle = "Gray";
         let fSize = Math.max(Math.ceil(this._size.y / 3), 15);
         ctx.font = `${fSize}px serif`;
-        ctx.fillText(this.imageCaption, this.position.x + this._size.x, this.position.y + fSize);
+        ctx.fillText(this.imageCaption, this.position.x + this._size.x/2, this.position.y - this._size.y/2 + fSize);
     }
 
     draw(ctx: CanvasRenderingContext2D): void {

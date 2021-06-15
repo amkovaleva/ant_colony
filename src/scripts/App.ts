@@ -51,7 +51,7 @@ export default class App {
     }
 
     static initialFill():void{
-        App.home = new Home(Point.zero);
+        App.home = new Home(new Point(25, 25));
         App.home.size = new Point(50, 50);
 
         let needGenerate = App.settings.initialFoodCount + App.settings.initialAntCount,
