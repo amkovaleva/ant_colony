@@ -1,18 +1,13 @@
 import Point from "./base/Point";
 import Mortal from "./base/Mortal";
 
-export default class Food extends Mortal{
+export default class Food extends Mortal {
     static foodTypes = [
         {amount: 1, img: 'cherries'}, {amount: 3, img: 'grapes'},
         {amount: 5, img: 'peach'}, {amount: 8, img: 'apple'},
         {amount: 13, img: 'pineapple'}, {amount: 20, img: 'watermelon'}
     ];
-
-    static get maxAmount (): number{
-        return Math.max(...Food.foodTypes.map(t => t.amount));
-    }
-
-    static foodSize = 40;
+    static foodSize: number = 40;
 
     constructor(position: Point, amount: number) {
         super(position, '', 0, amount);
@@ -20,12 +15,16 @@ export default class Food extends Mortal{
         this.updateType();
     }
 
+    static get maxAmount(): number {
+        return Math.max(...Food.foodTypes.map(t => t.amount));
+    }
+
     /**
      * обновляем картинку и описание
      */
-    updateType():void{
+    updateType(): void {
         for (let entry of Food.foodTypes) {
-            if(this.diffResources > entry.amount)
+            if (this.diffResources > entry.amount)
                 continue;
             this.image = entry.img;
             this.imageCaption = `${this.diffResources}`;
@@ -38,9 +37,9 @@ export default class Food extends Mortal{
      * Обновляем отображение
      * @param wantedAmount - количество еды, которое хотят "откусить"
      */
-    takeFood(wantedAmount: number): number{
+    takeFood(wantedAmount: number): number {
         let take = Math.min(this.diffResources, wantedAmount);
-        if(!take)
+        if (!take)
             return 0;
 
         this.spendResources(take)

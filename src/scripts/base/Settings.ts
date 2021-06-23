@@ -16,16 +16,16 @@ type TransformSettings = {
     isReflectHorizontal: boolean;
 }
 type AppTimerType = 'move' | 'food' | 'ant';
-const AppTimerTypes = {move: 'move', food: 'food', ant: 'ant' };
+const AppTimerTypes = {move: 'move', food: 'food', ant: 'ant'};
 type AppTimer = {
     type: AppTimerType;
     value: number;
 }
 
-type AntStatus = 'search' | 'take' | 'home'| 'dead';
-const AntStatuses = {search: 'search', take: 'take', home: 'home' , dead: 'dead' };
+type AntStatus = 'search' | 'found' | 'follow' | 'home' | 'dead';
+const AntStatuses = {search: 'search', found: 'found', follow: 'follow', home: 'home', dead: 'dead'};
 
-const getTime = (min:number, sec:number = 0, ms:number = 0) => {
+const getTime = (min: number, sec: number = 0, ms: number = 0) => {
     let mSec = ms;
     mSec += sec * 1000;
     mSec += min * 1000 * 60;

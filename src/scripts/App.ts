@@ -14,9 +14,6 @@ export default class App {
     static foods: Food[] = [];
     static ants: Ant[] = [];
     static timers: AppTimer[] = [];
-    static timer(name: string): AppTimer {
-        return App.timers.find(t => t.type === <AppTimerType>name)
-    }
 
     constructor(settings: Settings) {
         App.settings = settings;
@@ -33,7 +30,6 @@ export default class App {
         App.initialFill();
     }
 
-
     static get width(): number {
         if (!this.canvas)
             return 0;
@@ -46,14 +42,18 @@ export default class App {
         return this.canvas.height;
     }
 
-    static randPosDiapasons():Point{
+    static timer(name: string): AppTimer {
+        return App.timers.find(t => t.type === <AppTimerType>name)
+    }
+
+    static randPosDiapasons(): Point {
         return new Point(
             App.width - Math.max(Food.foodSize, Displayed.defaultImageSize) - 20,
             App.height - Math.max(Food.foodSize, Displayed.defaultImageSize) - 20
         );
     }
 
-    static initialFill():void{
+    static initialFill(): void {
         App.home = new Home(new Point(25, 25));
         App.home.size = new Point(50, 50);
 
@@ -77,14 +77,14 @@ export default class App {
             needGenerate--;
         }
 
-        Object.values(AppTimerTypes).forEach(type =>{
+        Object.values(AppTimerTypes).forEach(type => {
             App.timers.push({type: <AppTimerType>type, value: new Date().getTime()});
         });
 
         App.draw();
     }
 
-    static newFood(f:Food): void {
+    static newFood(f: Food): void {
         App.foods.push(f);
     }
 
@@ -92,30 +92,34 @@ export default class App {
         let newTime = new Date().getTime(), timer = App.timer(AppTimerTypes.move),
             timeDiff = newTime - timer.value;
 
-        for(let ant of App.ants){
+        for (let ant of App.ants.filter(a => a.isFoundState))
             ant.move(timeDiff);
-        }
+
+        for (let ant of App.ants.filter(a => !a.isFoundState))
+            ant.move(timeDiff);
+
         timer.value = newTime;
     }
 
-    static clear():void{
+    static clear(): void {
         App.foods = App.foods.filter(f => f.exists);
-        App.ants = App.ants.filter(f => f.exists );
+        App.ants = App.ants.filter(f => f.exists);
     }
 
-    static add():void{
-        App.timers.forEach(t=> {
-            if(t.type === <AppTimerType>AppTimerTypes.move)
+    static add(): void {
+        App.timers.forEach(t => {
+            if (t.type === <AppTimerType>AppTimerTypes.move)
                 return;
 
-            let isAnt = t.type === <AppTimerType>AppTimerTypes.ant, nowTime = new Date().getTime(), timePast = nowTime - t.value,
-                needPast = isAnt ? App.settings.newAntsDueTime :  App.settings.newFoodDueTime,
+            let isAnt = t.type === <AppTimerType>AppTimerTypes.ant, nowTime = new Date().getTime(),
+                timePast = nowTime - t.value,
+                needPast = isAnt ? App.settings.newAntsDueTime : App.settings.newFoodDueTime,
                 availablePos = App.randPosDiapasons(), count = Math.ceil(timePast / needPast);
 
-            while(count > 0){
-                if(isAnt){
-                    App.ants.push(new Ant(0, App.home.position, Point.randomPoint(availablePos.x, availablePos.y)) );
-                }else{
+            while (count > 0) {
+                if (isAnt) {
+                    App.ants.push(new Ant(0, App.home.position, Point.randomPoint(availablePos.x, availablePos.y)));
+                } else {
                     App.foods.push(new Food(Point.randomPoint(availablePos.x, availablePos.y), Point.randomNumber(Food.maxAmount, 1)));
                 }
                 count--;
@@ -124,13 +128,13 @@ export default class App {
         });
     }
 
-    static draw():void {
+    static draw(): void {
         App.clear();
         App.add();
         App.move();
         let ctx = App.canvasContext;
 
-        ctx.clearRect(0,0,App.canvas.width, App.canvas.height);
+        ctx.clearRect(0, 0, App.canvas.width, App.canvas.height);
         App.home.imageCaption = `${Home.foodAmount}`;
         App.home.draw(ctx);
         App.foods.forEach(f => f.draw(ctx));
