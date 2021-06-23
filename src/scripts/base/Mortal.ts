@@ -7,6 +7,7 @@ export default class Mortal extends Displayed {
 
     constructor(position: Point, image: string, resources: number, maxResources: number) {
         super(image, position);
+
         this._resources = resources;
         this._maxResources = maxResources;
     }
@@ -20,8 +21,7 @@ export default class Mortal extends Displayed {
     set resources(resources: number) {
         this._resources = resources;
 
-        if (this._resources >= this._maxResources)
-            this._isExists = false;
+        this._isExists = this._resources < this._maxResources;
     }
 
     _maxResources: number;
@@ -38,7 +38,7 @@ export default class Mortal extends Displayed {
         return this._isExists;
     }
 
-    spendResources(resources: number) {
+    addResources(resources: number) {
         this.resources += resources;
     }
 }

@@ -20,6 +20,7 @@ export default class App {
         Ant.maxAge = settings.maxAntAge;
         Ant.maxSpeed = settings.maxAntSpeed;
         Ant.maxWeight = settings.maxAntWeight;
+        Home.eatFoodPerTime = settings.eatFoodPerTime;
         Ant.antVisibleDist = settings.antVisibleDist;
         App.canvas = <HTMLCanvasElement>document.getElementById('canvas');
         App.canvasContext = App.canvas.getContext('2d');
@@ -88,58 +89,95 @@ export default class App {
         App.foods.push(f);
     }
 
+    /**
+     * У нас два таймера, которые нужно обновлять при отрисовке.
+     * Таймер для движения муравьев: Вначале двигаются муравьи, нашедшие еду. Затем остальные.
+     * Таймер траты еды дома: тратим еду в муравейнике
+     */
     static move(): void {
-        let newTime = new Date().getTime(), timer = App.timer(AppTimerTypes.move),
-            timeDiff = newTime - timer.value;
+        let newTime = new Date().getTime();
 
-        for (let ant of App.ants.filter(a => a.isFoundState))
-            ant.move(timeDiff);
+        [AppTimerTypes.move, AppTimerTypes.home].forEach(timerType =>{
+            let timer = App.timer(timerType),
+                timeDiff = newTime - timer.value;
 
-        for (let ant of App.ants.filter(a => !a.isFoundState))
-            ant.move(timeDiff);
+            if(timerType === AppTimerTypes.home){
+                let needEatFood  = Math.floor(timeDiff / Home.eatFoodPerTime );
+                App.home.addResources(-Math.min(needEatFood, App.home.resources));
+                timer.value += Home.eatFoodPerTime * needEatFood;
+                return;
+            }
 
-        timer.value = newTime;
+            for (let ant of App.ants.filter(a => a.isFoundState))
+                ant.move(timeDiff);
+
+            for (let ant of App.ants.filter(a => !a.isFoundState))
+                ant.move(timeDiff);
+
+            timer.value = newTime;
+
+        });
     }
 
+    /**
+     * убираем со страницы мертвых муравьев и закончившуюся еду
+     */
     static clear(): void {
         App.foods = App.foods.filter(f => f.exists);
         App.ants = App.ants.filter(f => f.exists);
     }
 
+    /**
+     * По мере необходимости добавляем на страницу новых мыравьев и еду.
+     * Новые муравьи не появляются если в муравейнике нет еды.
+     * Муравьи идут из муравейника в случайном направлении.
+     * Еда случайной величины располагается в случайном месте.
+     */
     static add(): void {
-        App.timers.forEach(t => {
-            if (t.type === <AppTimerType>AppTimerTypes.move)
+        [AppTimerTypes.ant, AppTimerTypes.food].forEach(timerType => {
+
+            let isAnt = timerType === AppTimerTypes.ant;
+            if(isAnt && App.home.isColonyHungry)
                 return;
 
-            let isAnt = t.type === <AppTimerType>AppTimerTypes.ant, nowTime = new Date().getTime(),
-                timePast = nowTime - t.value,
-                needPast = isAnt ? App.settings.newAntsDueTime : App.settings.newFoodDueTime,
-                availablePos = App.randPosDiapasons(), count = Math.ceil(timePast / needPast);
+            let nowTime = new Date().getTime(),
+                timer = App.timer(timerType),
+                timeToSpend = isAnt ? App.settings.newAntsDueTime : App.settings.newFoodDueTime,
+                availablePos = App.randPosDiapasons(),
+                count = Math.floor((nowTime - timer.value) / timeToSpend);
 
             while (count > 0) {
-                if (isAnt) {
-                    App.ants.push(new Ant(0, App.home.position, Point.randomPoint(availablePos.x, availablePos.y)));
-                } else {
-                    App.foods.push(new Food(Point.randomPoint(availablePos.x, availablePos.y), Point.randomNumber(Food.maxAmount, 1)));
-                }
+                let position = Point.randomPoint(availablePos.x, availablePos.y);
+
+                if (isAnt)
+                    App.ants.push(new Ant(0, App.home.position, position));
+                 else
+                    App.foods.push(new Food(position, Point.randomNumber(Food.maxAmount, 1)));
+
                 count--;
-                t.value += needPast;
+                timer.value += timeToSpend;
             }
         });
     }
 
+    /**
+     * Перерисовываем.
+     * Планируем слудующую итерауию только в случае, когда муравейник exists
+     */
     static draw(): void {
         App.clear();
         App.add();
         App.move();
+
         let ctx = App.canvasContext;
 
         ctx.clearRect(0, 0, App.canvas.width, App.canvas.height);
-        App.home.imageCaption = `${Home.foodAmount}`;
+        App.home.imageCaption = `${App.home.resources}`;
         App.home.draw(ctx);
         App.foods.forEach(f => f.draw(ctx));
         App.ants.forEach(f => f.draw(ctx));
 
-        window.requestAnimationFrame(App.draw);
+        if(App.home.exists)
+            window.requestAnimationFrame(App.draw);
     }
 }

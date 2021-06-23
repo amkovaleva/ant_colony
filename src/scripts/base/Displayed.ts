@@ -56,6 +56,11 @@ export default class Displayed {
         this._caption = str;
     }
 
+    /**
+     * Метод для предзагрузки изображений.
+     * Алгоритм начинает работать после того, как все необходимые изображения загружены на страницу.
+     * Иначе картинки не всегда отрысовываются.
+     */
     static async loadImages(): Promise<any> {
         return new Promise((resolve, reject) => {
             for (let imgName of Displayed.imagesToLoad) {
@@ -72,6 +77,10 @@ export default class Displayed {
         });
     }
 
+    /**
+     * Поиск нужной картинки среди загруженных.
+     * @param name - имя картинки
+     */
     static getImage(name: string): object {
         let index = Displayed.imagesToLoad.indexOf(name);
         if (index < 0)
@@ -79,6 +88,12 @@ export default class Displayed {
         return Displayed.loadedImages[index];
     }
 
+    /**
+     * Отрисовка изображения с учетом трансформаций.
+     * position является центром картинки.
+     * @param ctx - контекст canvas
+     * @param img - картинка (html элемент)
+     */
     drawImage(ctx: CanvasRenderingContext2D, img: any): void {
         let newX = this.position.x + this._size.x / 2, newY = this.position.y + this._size.y / 2;
 
@@ -91,14 +106,19 @@ export default class Displayed {
         ctx.restore();
     }
 
+    /**
+     * Отрисовка подписи к картинке.
+     * Пока это только число - кол-во еды.
+     * @param ctx - контекст canvas
+     */
     drawCaption(ctx: CanvasRenderingContext2D): void {
-        if (!this.imageCaption.length)
+        if (!this.imageCaption.length || +this.imageCaption <= 0)
             return;
 
         ctx.fillStyle = "Gray";
-        let fSize = Math.max(Math.ceil(this._size.y / 3), 15);
-        ctx.font = `${fSize}px serif`;
-        ctx.fillText(this.imageCaption, this.position.x + this._size.x / 2, this.position.y - this._size.y / 2 + fSize);
+        let fontSize = Math.max(Math.ceil(this._size.y / 3), 15);
+        ctx.font = `${fontSize}px serif`;
+        ctx.fillText(this.imageCaption, this.position.x + this._size.x / 2, this.position.y - this._size.y / 2 + fontSize);
     }
 
     draw(ctx: CanvasRenderingContext2D): void {

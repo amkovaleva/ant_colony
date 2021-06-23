@@ -3,7 +3,6 @@ import {AntStatus, AntStatuses, getTime, TransformSettings} from "./base/Setting
 import Mortal from "./base/Mortal";
 import App from "./App";
 import Food from "./Food";
-import Home from "./Home";
 
 export default class Ant extends Mortal {
     static maxAge = 50;
@@ -52,19 +51,22 @@ export default class Ant extends Mortal {
 
         let imgName = 'ant';
 
-        if (this.isHomeState) {
-            imgName += '-home';
+        if (this.isHomeState || this.isActiveSearchState) {
             this._food = null;
             this._followAnt = null;
+        }
+
+        if(this.isHomeState){
+            imgName += '-home';
             this.destination = this.homePosition;
-        } else if (this.isShareState)
+        }
+        else if (this.isActiveSearchState)
+            this.rotateInfo = this.transformSettings;
+
+        else if (this.isShareState)
             imgName += '-found';
 
-        else if (this.isActiveSearchState) {
-            this._followAnt = null;
-            this._food = null;
-            this.rotateInfo = this.transformSettings;
-        } else if (this.isFollowState)
+        else if (this.isFollowState)
             imgName += '-follow';
 
         else if (this.isDeadState) {
@@ -114,12 +116,15 @@ export default class Ant extends Mortal {
             rotateAngle: 0,
             isReflectHorizontal: false
         };
+
         if (this.isDeadState)
             return defaultSet
 
         let topPoint = new Point(this.position.x, this.position.y - 50); // так как на картинке муравей идет вверх
+
         defaultSet.isReflectHorizontal = this.destination.isRighterThen(this.position);
         defaultSet.rotateAngle = this.position.angleFromTo(topPoint, this.destination);
+
         return defaultSet;
     }
 
@@ -130,6 +135,7 @@ export default class Ant extends Mortal {
      */
     get speed(): number {
         let fifth = this.maxResources / 5, maxSpeed = Ant.maxSpeed;
+
         if (this.resources <= 4 * fifth)
             return maxSpeed;
 
@@ -200,7 +206,7 @@ export default class Ant extends Mortal {
      */
     move(liveTime: number): void {
         this.tryDie(liveTime);
-        this.resources += liveTime;
+        this.addResources(liveTime);
         this._clearFollowingAnts();
 
         if (this.isDeadState)
@@ -210,6 +216,7 @@ export default class Ant extends Mortal {
             this.tryNewDirection();
 
         let eps = this.isActiveSearchState ? this.size.x : Food.foodSize; // с какой точностью мы приближаемся к destination
+
         if (this.destination.isNearWith(this.position, eps / 2)) {
             this._destinationReached();
             return;
@@ -221,7 +228,7 @@ export default class Ant extends Mortal {
         if (this.isDeadState || this.diffResources > liveTime)
             return;
 
-        this.resources -= getTime(0, 5);// время, которое показывается могилка
+        this.addResources(-getTime(0, 5));// время, которое показывается могилка
         this.state = AntStatuses.dead;
     }
 
@@ -232,13 +239,15 @@ export default class Ant extends Mortal {
         let nearestVisibleFood = this.nearestFood,
             nearestAntToFollow = this._nearestAnt(nearestVisibleFood);
 
-        if (!nearestVisibleFood && !nearestAntToFollow) {
+        if (!nearestVisibleFood && !nearestAntToFollow)
             return;
-        }
 
-        let isGoByFood = nearestVisibleFood &&
-            (nearestAntToFollow && nearestVisibleFood.dist < nearestAntToFollow.dist || !nearestAntToFollow);
-        if (isGoByFood)
+        let isGoToFood = nearestVisibleFood !== null;
+
+        if(isGoToFood && nearestAntToFollow)
+            isGoToFood = nearestVisibleFood.dist < nearestAntToFollow.dist;
+
+        if (isGoToFood)
             this.food = nearestVisibleFood.object;
         else
             this.followAnt = nearestAntToFollow.object;
@@ -356,7 +365,7 @@ export default class Ant extends Mortal {
      * Добавляем еду в муравейник и убираем со "спины" муравья
      */
     storeFood(): void {
-        Home.foodAmount += this._foodAmount;
+        App.home.addResources(this._foodAmount);
         this._foodAmount = 0;
     }
 }

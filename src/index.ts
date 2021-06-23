@@ -8,17 +8,18 @@ canvas.id = 'canvas';
 document.body.append(canvas);
 
 let imagesLoad = Displayed.loadImages();
-imagesLoad.then(res => {
-    let app = new App({
-        maxAntAge: getTime(100), // минута
+imagesLoad.then(() => {
+    new App({
+        maxAntAge: getTime(1),
         maxAntSpeed: 0.1,
         antVisibleDist: 150,
         maxAntWeight: 3,
         initialAntCount: 10,
-        newAntsDueTime: getTime(20, 0),
+        newAntsDueTime: getTime(0, 20),
+        eatFoodPerTime: getTime(0, 1),
 
         initialFoodCount: 10,
-        newFoodDueTime: getTime(0, 10)
+        newFoodDueTime: getTime(1)
     });
 })
 

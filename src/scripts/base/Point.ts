@@ -56,11 +56,16 @@ export default class Point {
     /**
      * рассотяние от данной точки до конечной
      * @param point - конечная точка
+     * @param needRound - нужно ли округлить результат до целого. По умолчанию true
      */
     distTo(point: Point, needRound: boolean = true): number {
         let diff = this.diffFrom(point),
             dist = Math.sqrt(diff.x ** 2 + diff.y ** 2);
-        return needRound ? Math.round(dist) : dist;
+
+        if(needRound)
+            dist = Math.round(dist);
+
+        return dist;
     }
 
     /**
@@ -76,7 +81,7 @@ export default class Point {
         let diff = this.diffFrom(point),
             dist = this.distTo(point, false);
 
-        if (dist < 1)
+        if (dist < 1) //Погрешность до пикселя
             return point;
 
         let ratio = Math.abs((isPathByDiag ? dist : diff.x) / path);
@@ -101,9 +106,14 @@ export default class Point {
      * @param to Точка, которой "заканчиваеися" угол
      */
     angleFromTo(from: Point, to: Point): number {
-        let distFrom = this.distTo(from, false), dostTo = this.distTo(to, false),
-            vectorFrom = this.diffFrom(from), vectorTo = this.diffFrom(to),
+        let distFrom = this.distTo(from, false),
+            dostTo = this.distTo(to, false),
+
+            vectorFrom = this.diffFrom(from),
+            vectorTo = this.diffFrom(to),
+
             cosBetween = (vectorFrom.x * vectorTo.x + vectorFrom.y * vectorTo.y) / (distFrom * dostTo);
+
         return Math.acos(cosBetween);
     }
 }

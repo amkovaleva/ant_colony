@@ -11,6 +11,7 @@ export default class Food extends Mortal {
 
     constructor(position: Point, amount: number) {
         super(position, '', 0, amount);
+
         this.size = new Point(Food.foodSize, Food.foodSize);
         this.updateType();
     }
@@ -24,8 +25,10 @@ export default class Food extends Mortal {
      */
     updateType(): void {
         for (let entry of Food.foodTypes) {
+
             if (this.diffResources > entry.amount)
                 continue;
+
             this.image = entry.img;
             this.imageCaption = `${this.diffResources}`;
             return;
@@ -38,11 +41,13 @@ export default class Food extends Mortal {
      * @param wantedAmount - количество еды, которое хотят "откусить"
      */
     takeFood(wantedAmount: number): number {
+
         let take = Math.min(this.diffResources, wantedAmount);
+
         if (!take)
             return 0;
 
-        this.spendResources(take)
+        this.addResources(take)
         this.updateType();
         return take;
     }

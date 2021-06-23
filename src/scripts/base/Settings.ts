@@ -9,14 +9,15 @@ type Settings = {
 
     initialFoodCount: number;
     newFoodDueTime: number;
+    eatFoodPerTime: number;
 }
 
 type TransformSettings = {
     rotateAngle: number;
     isReflectHorizontal: boolean;
 }
-type AppTimerType = 'move' | 'food' | 'ant';
-const AppTimerTypes = {move: 'move', food: 'food', ant: 'ant'};
+type AppTimerType = 'move' | 'food' | 'ant' | 'home';
+const AppTimerTypes = {move: 'move', food: 'food', ant: 'ant', home: 'home'};
 type AppTimer = {
     type: AppTimerType;
     value: number;
