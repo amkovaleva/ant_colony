@@ -14,10 +14,11 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Колония муравьев',
+            template: './src/views/index.ejs'
         }),
         new CopyPlugin({
             patterns: [
-                { from: "./src/images", to: "./images" }
+                {from: "./src/images", to: "./images"},
             ]
         })
     ],
@@ -29,7 +30,7 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
-                exclude: /node_modules/,
+                exclude: /node_modules/
             },
             {
                 test: /\.s[ac]ss$/i,
@@ -40,16 +41,19 @@ module.exports = {
                     "css-loader",
                     // Compiles Sass to CSS
                     "sass-loader",
-                ],
+                ]
             },
             {
-                test: /\.(png|svg|jpg|jpeg|gif)$/i,
-                type: 'asset/resource',
+                test: /\.(svg|woff|woff2|eot|ttf|otf)$/i,
+                type: 'asset/resource'
             },
             {
-                test: /\.(woff|woff2|eot|ttf|otf)$/i,
-                type: 'asset/resource',
-            },
+                test: /\.html$/i,
+                loader: 'html-loader',
+                options: {
+                    esModule: false,
+                },
+            }
         ],
     },
 };

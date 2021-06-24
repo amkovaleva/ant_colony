@@ -3,9 +3,6 @@ import "./styles/main.scss";
 import Displayed from "./scripts/base/Displayed";
 import {getTime} from "./scripts/base/Settings";
 
-let canvas = document.createElement('canvas');
-canvas.id = 'canvas';
-document.body.append(canvas);
 
 let imagesLoad = Displayed.loadImages();
 imagesLoad.then(() => {
