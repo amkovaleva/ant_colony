@@ -1,10 +1,10 @@
 <html lang="ru">
 <head>
-    <title><%=htmlWebpackPlugin.options.title%></title>
+    <title><%= htmlWebpackPlugin.options.title %></title>
     <meta charset="utf-8">
 </head>
 <body>
-<%= require("./canvas.html") %>
-<%= require("./settings.html") %>
+<a href="settings.html"><%= htmlWebpackPlugin.options.settings_title %></a>
+    <canvas id="canvas"></canvas>
 </body>
 </html>

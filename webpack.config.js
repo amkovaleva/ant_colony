@@ -3,7 +3,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: {
+        index: './src/index.ts',
+        settings: './src/settings.ts'
+    },
     devtool: 'inline-source-map',
     mode: 'development',
     output: {
@@ -13,8 +16,20 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'src/views/index.ejs',
+            chunks: ['index'],
             title: 'Колония муравьев',
-            template: './src/views/index.ejs'
+            settings_title: 'Параметры',
+            inject: 'body'
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'settings.html',
+            template: 'src/views/settings.ejs',
+            chunks: ['settings'],
+            index_title: 'Колония муравьев',
+            title: 'Параметры',
+            inject: 'body'
         }),
         new CopyPlugin({
             patterns: [
@@ -46,13 +61,6 @@ module.exports = {
             {
                 test: /\.(svg|woff|woff2|eot|ttf|otf)$/i,
                 type: 'asset/resource'
-            },
-            {
-                test: /\.html$/i,
-                loader: 'html-loader',
-                options: {
-                    esModule: false,
-                },
             }
         ],
     },

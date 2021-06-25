@@ -1,0 +1,35 @@
+body {
+  padding: 50px 10px;
+}
+h1, a{
+  text-align: center;
+  display: block;
+}
+form{
+  max-width: 800px;
+  margin: 50px auto 0;
+  .field{
+    margin: 20px 0;
+    >*{
+      display: inline-block;
+      padding: 0 5px;
+    }
+    label{
+      width: 40%;
+    }
+    input{
+      width: 20%;
+      &[type='submit']{
+        width: auto;
+        padding: 10px 20px;
+        margin: 30px auto;
+      }
+    }
+    >span{
+      width:  20%;
+      span{
+        padding: 0 5px;
+      }
+    }
+  }
+}

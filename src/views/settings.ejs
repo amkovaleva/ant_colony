@@ -1,0 +1,105 @@
+<html lang="ru">
+<head>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <meta charset="utf-8">
+</head>
+<body>
+<div>
+    <h1><%= htmlWebpackPlugin.options.title %></h1>
+    <a href="index.html"><%= htmlWebpackPlugin.options.index_title %></a>
+    <%
+    let options = [
+        {
+            name: 'initialFoodCount',
+            text: 'Изначальное кол-во еды',
+            isTime: false,
+            units: 'шт.',
+            default: 10
+        },
+        {
+            name: 'initialAntCount',
+            text: 'Изначальное кол-во муравьев',
+            isTime: false,
+            units: 'шт.',
+            default: 15
+        },
+        {
+            name: 'maxAntAge',
+            text: 'Продолжительность жизни муравья',
+            isTime: true,
+            units: 'мс.',
+            default: 1000 * 60
+        },
+        {
+            name: 'maxAntSpeed',
+            text: 'Скорость муровья',
+            isTime: false,
+            units: 'px /мс.',
+            default: 0.1
+        },
+        {
+            name: 'maxAntWeight',
+            text: 'Муравей может поднять',
+            isTime: false,
+            units: 'ед. еды',
+            default: 3
+        },
+        {
+            name: 'antVisibleDist',
+            text: 'Муравей видит еду за ',
+            isTime: false,
+            units: 'px',
+            default: 50*3
+        },
+        {
+            name: 'antHearDist',
+            text: 'Муравей слышит зов другого за ',
+            isTime: false,
+            units: 'px',
+            default: 50*3*3
+        },
+        {
+            name: 'newAntsDueTime',
+            text: 'Новый муравей рождается через',
+            isTime: true,
+            units: 'мс.',
+            default: 3
+        },
+        {
+            name: 'newFoodDueTime',
+            text: 'Новая еда возникает каждые',
+            isTime: true,
+            units: 'мс.',
+            default: 1000*10
+        },
+        {
+            name: 'eatFoodPerTime',
+            text: 'Единица еды тратится на муравейник за',
+            isTime: true,
+            units: 'мс.',
+            default: 1000*20
+        }
+    ];
+    %>
+    <form>
+        <% for (let option of  options) { %>
+            <div class="field">
+                <label for="<%= option.name%>"><%= option.text %></label>
+                <input type="number" name="<%= option.name%>" value="<%= option.default %>" id="<%= option.name%>">
+                <span>
+                    <%= option.units%>
+                    <% if(option.isTime) { %>
+                        <span class="time"></span>
+                    <% }%>
+                </span>
+            </div>
+        <% } %>
+
+        <div class="field">
+            <input type="submit" value="Сохранить и запустить муравейник">
+        </div>
+
+    </form>
+</div>
+</body>
+</html>

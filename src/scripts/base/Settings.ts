@@ -1,17 +1,3 @@
-type Settings = {
-    maxAntAge: number;
-    maxAntSpeed: number;
-    antVisibleDist: number;
-    maxAntWeight: number;
-
-    initialAntCount: number;
-    newAntsDueTime: number;
-
-    initialFoodCount: number;
-    newFoodDueTime: number;
-    eatFoodPerTime: number;
-}
-
 type TransformSettings = {
     rotateAngle: number;
     isReflectHorizontal: boolean;
@@ -33,4 +19,4 @@ const getTime = (min: number, sec: number = 0, ms: number = 0) => {
     return mSec;
 }
 
-export {Settings, TransformSettings, AntStatus, AntStatuses, getTime, AppTimerType, AppTimer, AppTimerTypes};
+export { TransformSettings, AntStatus, AntStatuses, getTime, AppTimerType, AppTimer, AppTimerTypes};

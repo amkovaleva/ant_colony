@@ -2,11 +2,14 @@ import Displayed from "./base/Displayed";
 import Point from "./base/Point";
 import Food from "./Food";
 import Ant from "./Ant";
-import {AppTimer, AppTimerType, AppTimerTypes, Settings} from "./base/Settings";
+import {AppTimer, AppTimerType, AppTimerTypes, getTime} from "./base/Settings";
 import Home from "./Home";
 
 export default class App {
-    static settings: Settings;
+
+    static newAntsDueTime: number = getTime(0, 10);
+    static newFoodDueTime: number = getTime(0, 10);
+
     static canvas: HTMLCanvasElement;
     static canvasContext: CanvasRenderingContext2D;
 
@@ -15,20 +18,58 @@ export default class App {
     static ants: Ant[] = [];
     static timers: AppTimer[] = [];
 
-    constructor(settings: Settings) {
-        App.settings = settings;
-        Ant.maxAge = settings.maxAntAge;
-        Ant.maxSpeed = settings.maxAntSpeed;
-        Ant.maxWeight = settings.maxAntWeight;
-        Home.eatFoodPerTime = settings.eatFoodPerTime;
-        Ant.antVisibleDist = settings.antVisibleDist;
+    constructor(settings: Map<string, any>) {
+
+        Ant.maxAge =  +settings.get('maxAntAge');
+        Ant.maxSpeed = +settings.get('maxAntSpeed');
+        Ant.maxWeight = +settings.get('maxAntWeight');
+
+        Ant.antVisibleDist = +settings.get('antVisibleDist');
+        Ant.antHearDist = +settings.get('antHearDist');
+
+        Home.eatFoodPerTime = +settings.get('eatFoodPerTime');
+
+        App.newAntsDueTime = +settings.get('newAntsDueTime');
+        App.newFoodDueTime = +settings.get('newFoodDueTime');
+
         App.canvas = <HTMLCanvasElement>document.getElementById('canvas');
         App.canvasContext = App.canvas.getContext('2d');
 
         App.canvas.width = window.innerWidth;
         App.canvas.height = window.innerHeight;
 
-        App.initialFill();
+        App.initialFill( +settings.get('initialFoodCount'),  +settings.get('initialAntCount'));
+    }
+
+    static initialFill(foodCount:number, antCount:number): void {
+        App.home = new Home(new Point(25, 25));
+        App.home.size = new Point(50, 50);
+
+        let needGenerate = foodCount + antCount,
+            availablePos = App.randPosDiapasons();
+        /**
+         * сначала еду - потом муравьев
+         */
+        while (needGenerate > 0) {
+            let isFoodGeneration = needGenerate > antCount,
+                point = Point.randomPoint(availablePos.x, availablePos.y),
+                resource = Point.randomNumber(isFoodGeneration ? Food.maxAmount : Ant.maxAge, 1);
+
+            if (isFoodGeneration) {
+                App.foods.push(new Food(point, resource));
+                needGenerate--;
+                continue;
+            }
+
+            this.ants.push(new Ant(resource, point, Point.randomPoint(availablePos.x, availablePos.y)));
+            needGenerate--;
+        }
+
+        Object.values(AppTimerTypes).forEach(type => {
+            App.timers.push({type: <AppTimerType>type, value: new Date().getTime()});
+        });
+
+        App.draw();
     }
 
     static get width(): number {
@@ -54,36 +95,6 @@ export default class App {
         );
     }
 
-    static initialFill(): void {
-        App.home = new Home(new Point(25, 25));
-        App.home.size = new Point(50, 50);
-
-        let needGenerate = App.settings.initialFoodCount + App.settings.initialAntCount,
-            availablePos = App.randPosDiapasons();
-        /**
-         * сначала еду - потом муравьев
-         */
-        while (needGenerate > 0) {
-            let isFoodGeneration = needGenerate > App.settings.initialAntCount,
-                point = Point.randomPoint(availablePos.x, availablePos.y),
-                resource = Point.randomNumber(isFoodGeneration ? Food.maxAmount : Ant.maxAge, 1);
-
-            if (isFoodGeneration) {
-                App.foods.push(new Food(point, resource));
-                needGenerate--;
-                continue;
-            }
-
-            this.ants.push(new Ant(resource, point, Point.randomPoint(availablePos.x, availablePos.y)));
-            needGenerate--;
-        }
-
-        Object.values(AppTimerTypes).forEach(type => {
-            App.timers.push({type: <AppTimerType>type, value: new Date().getTime()});
-        });
-
-        App.draw();
-    }
 
     static newFood(f: Food): void {
         App.foods.push(f);
@@ -142,7 +153,7 @@ export default class App {
 
             let nowTime = new Date().getTime(),
                 timer = App.timer(timerType),
-                timeToSpend = isAnt ? App.settings.newAntsDueTime : App.settings.newFoodDueTime,
+                timeToSpend = isAnt ? App.newAntsDueTime : App.newFoodDueTime,
                 availablePos = App.randPosDiapasons(),
                 count = Math.floor((nowTime - timer.value) / timeToSpend);
 
