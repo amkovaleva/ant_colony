@@ -5,6 +5,13 @@
 </head>
 <body>
 <a href="settings.html"><%= htmlWebpackPlugin.options.settings_title %></a>
-    <canvas id="canvas"></canvas>
+<canvas id="canvas"></canvas>
+<div id="final">
+    <h2>Конец!</h2>
+    <p>Колония муравьев жила: <span id="total-time"></span>.</p>
+    <p>Максимальное количество муравьев: <span id="total-ants"></span>.</p>
+    <p>Всего собрано еды: <span id="total-food"></span>.</p>
+    <a href="index.html" id="reload">Начать заново....</a>
+</div>
 </body>
 </html>

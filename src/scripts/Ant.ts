@@ -1,5 +1,5 @@
 import Point from "./base/Point";
-import {AntStatus, AntStatuses, getTime, TransformSettings} from "./base/Settings";
+import {AntStatus, AntStatuses, TransformSettings} from "./base/Settings";
 import Mortal from "./base/Mortal";
 import App from "./App";
 import Food from "./Food";
@@ -228,7 +228,7 @@ export default class Ant extends Mortal {
         if (this.isDeadState || this.diffResources > liveTime)
             return;
 
-        this.addResources(-getTime(0, 5));// время, которое показывается могилка
+        this.addResources(-5000);// время, которое показывается могилка - 5 sec.
         this.state = AntStatuses.dead;
     }
 
@@ -365,7 +365,7 @@ export default class Ant extends Mortal {
      * Добавляем еду в муравейник и убираем со "спины" муравья
      */
     storeFood(): void {
-        App.home.addResources(this._foodAmount);
+        App.home.storeFood(this._foodAmount);
         this._foodAmount = 0;
     }
 }

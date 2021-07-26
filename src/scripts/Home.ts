@@ -1,11 +1,11 @@
 import Point from "./base/Point";
 import Mortal from "./base/Mortal";
 import App from "./App";
-import {getTime} from "./base/Settings";
 
 export default class Home extends Mortal {
 
-    static eatFoodPerTime:number = getTime(0, 10);
+    static eatFoodPerTime:number = Infinity;
+    totalCollectedFood:number = 0;
 
     constructor(position: Point) {
         super(position, 'home', 0, Infinity);
@@ -25,4 +25,8 @@ export default class Home extends Mortal {
         return !this.isColonyHungry || App.ants.length > 0;
     }
 
+    storeFood(foodAmount:number):void{
+        this.addResources(foodAmount);
+        this.totalCollectedFood += foodAmount;
+    }
 }

@@ -1,6 +1,11 @@
 import "./styles/settings.scss";
 
 let form = document.getElementsByTagName('form')[0];
+
+/**
+ * При изменении значения выводим время в удобном виде.
+ */
+
 let getTimeStr = (time: number): string => {
         let date = new Date(0);
         date.setMilliseconds(time);
@@ -24,28 +29,27 @@ let getTimeStr = (time: number): string => {
     changeTimeHandler = function (): void {
         let span = <HTMLElement>(this.nextElementSibling.lastElementChild);
         span.innerText = `(${getTimeStr(+this.value)})`
-    },
-
-    /**
-     * сохранить настройки
-     */
-    saveData = function (): void {
-        let inputs = form.getElementsByTagName('input'),
-            settings = new Map();
-        for (let input of Array.from(inputs)) {
-            if (input.type === 'submit')
-                continue;
-            settings.set(input.name, input.value);
-        }
-        localStorage.setItem('ant_settings', JSON.stringify(Array.from(settings)));
     };
-/**
- * При изменении значения выводим время в удобном виде.
- */
+
 Array.from(document.getElementsByClassName('time')).forEach(span => {
     let timeInput = <HTMLInputElement>(span.parentElement.previousElementSibling);
     timeInput.addEventListener('change', changeTimeHandler);
 });
+
+
+/**
+ * сохранить настройки
+ */
+let saveData = function (): void {
+    let inputs = form.getElementsByTagName('input'),
+        settings = new Map();
+    for (let input of Array.from(inputs)) {
+        if (input.type === 'submit')
+            continue;
+        settings.set(input.name, input.value);
+    }
+    localStorage.setItem('ant_settings', JSON.stringify(Array.from(settings)));
+};
 
 /**
  * Сохранение настроек и редирект
@@ -59,7 +63,7 @@ form.addEventListener('submit', (event) => {
 });
 
 /**
- * Сохраняем настройки.
+ * Подгружаем настройки, если они были сохранены и сохраняем значения по умолчанию в противном случае.
  */
 let settingsStr = localStorage.getItem('ant_settings');
 if (settingsStr) {

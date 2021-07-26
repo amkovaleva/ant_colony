@@ -2,13 +2,14 @@ import Displayed from "./base/Displayed";
 import Point from "./base/Point";
 import Food from "./Food";
 import Ant from "./Ant";
-import {AppTimer, AppTimerType, AppTimerTypes, getTime} from "./base/Settings";
+import {AppTimer, AppTimerType, AppTimerTypes, restartApp} from "./base/Settings";
 import Home from "./Home";
+
 
 export default class App {
 
-    static newAntsDueTime: number = getTime(0, 10);
-    static newFoodDueTime: number = getTime(0, 10);
+    static newAntsDueTime: number = Infinity;
+    static newFoodDueTime: number = Infinity;
 
     static canvas: HTMLCanvasElement;
     static canvasContext: CanvasRenderingContext2D;
@@ -17,6 +18,8 @@ export default class App {
     static foods: Food[] = [];
     static ants: Ant[] = [];
     static timers: AppTimer[] = [];
+    static startTime: Date = new Date();
+    static maxAntsCount: number = 0;
 
     constructor(settings: Map<string, any>) {
 
@@ -44,6 +47,9 @@ export default class App {
     static initialFill(foodCount:number, antCount:number): void {
         App.home = new Home(new Point(25, 25));
         App.home.size = new Point(50, 50);
+
+        App.foods = [];
+        App.ants = [];
 
         let needGenerate = foodCount + antCount,
             availablePos = App.randPosDiapasons();
@@ -136,6 +142,8 @@ export default class App {
     static clear(): void {
         App.foods = App.foods.filter(f => f.exists);
         App.ants = App.ants.filter(f => f.exists);
+
+        App.canvasContext.clearRect(0, 0, App.canvas.width, App.canvas.height);
     }
 
     /**
@@ -172,6 +180,27 @@ export default class App {
     }
 
     /**
+     * выводим статистику по работа приложения
+     */
+    static final():void{
+        let popUp = document.getElementById('final');
+        popUp.style.display = 'block';
+
+        let timeOfApp = new Date((new Date()).getTime() - App.startTime.getTime()),
+            templateData = [`${timeOfApp.getHours()}:${timeOfApp.getMinutes()}:${timeOfApp.getSeconds()}`, App.maxAntsCount, App.home.totalCollectedFood];
+        ['time', 'ants', 'food'].forEach((type, index) => {
+            let place = document.getElementById(`total-${type}`);
+            place.textContent = `${templateData[index]}`;
+        });
+
+        let reloadLink = document.getElementById('reload');
+        reloadLink.onclick = ( event ) => {
+            event.preventDefault();
+            restartApp();
+        };
+    }
+
+    /**
      * Перерисовываем.
      * Планируем слудующую итерауию только в случае, когда муравейник exists
      */
@@ -182,13 +211,16 @@ export default class App {
 
         let ctx = App.canvasContext;
 
-        ctx.clearRect(0, 0, App.canvas.width, App.canvas.height);
         App.home.imageCaption = `${App.home.resources}`;
         App.home.draw(ctx);
         App.foods.forEach(f => f.draw(ctx));
         App.ants.forEach(f => f.draw(ctx));
+        App.maxAntsCount = Math.max(App.maxAntsCount, App.ants.length);
+
 
         if(App.home.exists)
             window.requestAnimationFrame(App.draw);
+        else
+            App.final();
     }
 }
